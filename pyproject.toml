@@ -1,16 +1,19 @@
 [project]
-name = "uv-cli-template"
+name = "clip-gif-cli"
 version = "0.1.0"
-description = "Add your description here"
+description = "A CLI tool for working with clips and GIFs"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["typer>=0.16.1"]
+dependencies = [
+ "typed-ffmpeg>=3.6",
+ "typer>=0.19.2",
+]
 
 [project.scripts]
-uv-cli-template = "package.main:app"
+clip-gif-cli = "package.main:app"
 
 [dependency-groups]
-dev = ["pytest", "ruff", "pyrefly", "pre-commit"]
+dev = ["pytest", "ruff", "pyrefly", "pre-commit", "typed-ffmpeg[graph]>=3.6"]
 
 
 [tool.pyrefly]
