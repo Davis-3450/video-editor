@@ -1,8 +1,10 @@
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 import ffmpeg
 from ffmpeg.nodes import InputNode
+from typer import echo
 
 # import ffmpeg
 
@@ -38,6 +40,8 @@ class Clip:
         self.output_path: Path = self._set_output_path(input_path, output_path)
         self.settings: ClipSettings = settings
         self.video_name: str = input_path.stem
+        self.total_duration: float = self._set_total_duration()
+        self.increment = self._calculate_increment()
 
     def create_clips(self) -> list[Path]:
         pass
