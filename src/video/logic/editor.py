@@ -23,11 +23,18 @@ class ClipSettings:
 
 
 class Clip:
-    """Clip cerator"""
+    """Clip creator"""
 
-    def __init__(self, video: InputNode, settings: ClipSettings, input_path: Path, output_path: Path | None):
+    def __init__(
+        self,
+        video: InputNode,
+        settings: ClipSettings,
+        input_path: Path,
+        output_path: Path | None,
+    ):
         self.video: InputNode = video
-        self.input_path: Path = input_path # this might be eitehr a file or a directory
+        self.input_path: Path = input_path  # this might be eitehr a file or a directory
+        self.probe: dict = ffmpeg.probe(self.input_path)
         self.output_path: Path = self._set_output_path(input_path, output_path)
         self.settings: ClipSettings = settings
         self.video_name: str = input_path.stem
