@@ -22,14 +22,26 @@ class ClipSettings:
 class Clip:
     """Clip cerator"""
 
-    def __init__(self, video: InputNode, settings: ClipSettings):
-        self.video = video
-        self.output_path: Path
-        self.settings = settings
+    def __init__(self, video: InputNode, settings: ClipSettings, input_path: Path, output_path: Path | None):
+        self.video: InputNode = video
+        self.input_path: Path = input_path # this might be eitehr a file or a directory
+        self.output_path: Path = self._set_output_path(input_path, output_path)
+        self.settings: ClipSettings = settings
+        self.video_name: str = input_path.stem
 
     def create_clips(self) -> list[Path]:
         pass
 
+    def _set_output_path(self, input_path: Path, output_path: Path | None) -> Path:
+        """set the output path"""
+        dir = "clips"
+        if output_path is not None:
+            return output_path
+
+        if input_path.is_file():
+            return input_path.parent / self.video_name / dir
+
+        return input_path / self.video_name / dir
 
 class Editor:
     def __init__(self, video: InputNode):
