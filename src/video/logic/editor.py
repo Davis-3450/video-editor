@@ -7,14 +7,17 @@ from ffmpeg.nodes import InputNode
 # import ffmpeg
 
 
+class ClipMode(str, Enum):
+    VIDEO = "video"
+    GIF = "gif"
+
+
 @dataclass
 class ClipSettings:
-    frame_rate: int | None = None
-    output_path: Path | None = None
+    fps: float | None = None
     mirror: bool = False
-    clip_duration: float | None = None
-    clip_fps: float | None = None
-    mode: list[str] = ["video"]  # video | gif
+    length: int
+    mode: list[ClipMode] = [ClipMode.VIDEO]  # video | gif
 
     # I dont think we need more for now
 
