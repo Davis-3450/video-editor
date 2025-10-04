@@ -3,10 +3,9 @@ from enum import Enum
 from pathlib import Path
 
 import ffmpeg
-from ffmpeg.nodes import InputNode
-from typer import echo
-
-# import ffmpeg
+import ffmpeg.filters
+import typer.colors
+from typer import secho
 
 
 class ClipMode(str, Enum):
@@ -91,42 +90,29 @@ class Clip:
         self, start: float, duration: float, path: Path, name: str
     ) -> Path | None:
         """make an individual clip from the video"""
-        stream: InputNode = self.video
-        clip: InputNode = ffmpeg.trim(stream, start=start, duration=duration).setpts(
-            "PTS-STARTPTS"
-        )
+        output_path: Path = path / name
 
-        output_path: Path = path
+        # TODO
+        #    de.GIF in self.settings.mode:
+        #         output_path = output_path.with_suffix(".gif")
 
-        if self.settings.mirror:
-            stream = ffmpeg.hflip(stream)
+        #     if ClipMode.VIDEO in self.settings.mode:
+        #         output_path = output_path.with_suffix(".mp4")
 
-        if self.settings.fps:
-            stream = ffmpeg.filter(stream, "fps", fps=self.settings.fps)
-
-        output_path = output_path / name
-
-        if ClipMode.GIF in self.settings.mode:
-            output_path = output_path.with_suffix(".gif")
-
-        if ClipMode.VIDEO in self.settings.mode:
-            output_path = output_path.with_suffix(".mp4")
+        output_path = output_path.with_suffix(".mp4")
 
         try:
-            out = (
-                ffmpeg.output(
-                    clip,
-                    str(output_path),
-                    r=self.settings.fps,
+            _ = (
+                ffmpeg.input(filename=self.input_path, ss=start, t=duration)
+                .output(
+                    filename=str(output_path),
                 )
-                .global_args("-y")
                 .run()
             )
+            return output_path
 
         except Exception:
-            pass
-
-        return out
+            secho("Video failed", fg=typer.colors.RED)
 
 
 # class Editor:
