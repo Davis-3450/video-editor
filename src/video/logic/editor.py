@@ -49,11 +49,12 @@ class Clip:
 
     def create_clips(self) -> list[Path | None]:
         clips: list[Path | None] = []
-        start = 0
-        increment = self.increment
+        start = 0.0
+        n_clips = int(self.total_duration // self.settings.clip_length)
 
-        # base_name + something + type (gif or video)
-        while start < self.total_duration:
+        self.output_path.mkdir(parents=True, exist_ok=True)
+
+        for i in range(n_clips):
             clip: Path | None = self._clip(
                 start=start,
                 duration=start + increment,
@@ -63,7 +64,8 @@ class Clip:
             echo(f"video: {str(clip)} has been proccesed")
 
             clips.append(clip)
-            start += increment
+            start += self.settings.clip_length
+            secho(f"video: {str(clip)} has been proccesed", fg=typer.colors.GREEN)
 
         return clips
 
