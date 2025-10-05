@@ -17,8 +17,8 @@ class ClipMode(str, Enum):
 class ClipSettings:
     fps: float | None = None
     mirror: bool = False
-    clips: int = 0
-    mode: list[ClipMode] = [ClipMode.VIDEO]  # video | gif
+    clip_length: int = 0
+    mode: list[ClipMode] | None = None  # video | gif
 
     # I dont think we need more for now
 
@@ -28,12 +28,10 @@ class Clip:
 
     def __init__(
         self,
-        video: InputNode,
         settings: ClipSettings,
         input_path: Path,
         output_path: Path | None,
     ):
-        self.video: InputNode = video
         self.input_path: Path = input_path  # this might be eitehr a file or a directory
         self.video_name: str = self.input_path.stem
         self.output_path: Path = self._set_output_path(input_path, output_path)
@@ -44,7 +42,6 @@ class Clip:
         self.settings: ClipSettings = settings
 
         self.total_duration: float = self._set_total_duration()
-        self.increment = self._calculate_increment()
 
     def create_clips(self) -> list[Path | None]:
         clips: list[Path | None] = []
@@ -56,20 +53,16 @@ class Clip:
         for i in range(n_clips):
             clip: Path | None = self._clip(
                 start=start,
-                duration=start + increment,
+                duration=start,
                 path=self.output_path,
                 name=self.video_name,
             )
-            echo(f"video: {str(clip)} has been proccesed")
 
             clips.append(clip)
             start += self.settings.clip_length
-            secho(f"video: {str(clip)} has been proccesed", fg=typer.colors.GREEN)
+            secho(f"video: {str(clip)} has been proccesed", fg=typer.colors.YELLOW)
 
         return clips
-
-    def _calculate_increment(self):
-        return int(self.total_duration) // self.settings.clips
 
     def _set_total_duration(self) -> float:
         return float(self.probe["format"]["duration"])
