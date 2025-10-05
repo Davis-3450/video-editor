@@ -1,16 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "clip-gif-cli"
+name = "video-editor"
 version = "0.1.0"
-description = "A CLI tool for working with clips and GIFs"
+description = "A CLI tool for making clips and GIFs"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
- "typed-ffmpeg>=3.6",
- "typer>=0.19.2",
-]
+dependencies = ["typed-ffmpeg>=3.6", "typer>=0.19.2"]
 
 [project.scripts]
-clip-gif-cli = "package.main:app"
+video-editor = "src.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = "src"
 
 [dependency-groups]
 dev = ["pytest", "ruff", "pyrefly", "pre-commit", "typed-ffmpeg[graph]>=3.6"]
