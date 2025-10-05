@@ -2,9 +2,8 @@ from pathlib import Path
 
 import typer
 
-from video.logic.editor import Clip, ClipMode, ClipSettings
-
 from .. import __version__
+from ..video.logic import Clip, ClipMode, ClipSettings
 
 # video-editor
 # schema: video-editor edit seconds input output format
