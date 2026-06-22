@@ -51,6 +51,19 @@ class Clip:
 
         self.total_duration: float = self._set_total_duration()
 
+    def create_preview(self) -> Path | None:
+        """Extract a single clip of `clip_length` seconds from the start."""
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        clip = self._clip(
+            start=0.0,
+            duration=self.settings.clip_length,
+            path=self.output_path,
+            name=f"{self.video_name}_preview",
+        )
+        if clip:
+            secho(f"preview: {str(clip)} has been processed", fg=typer.colors.YELLOW)
+        return clip
+
     def create_clips(self) -> list[Path | None]:
         clips: list[Path | None] = []
         start = 0.0
@@ -81,16 +94,9 @@ class Clip:
         )
 
     def _set_output_path(self, input_path: Path, output_path: Path | None) -> Path:
-        """set the output path"""
-        dir = "clips"
-
         if output_path is not None:
             return output_path
-
-        if input_path.is_file():
-            return input_path.parent / self.video_name / dir
-
-        return input_path / self.video_name / dir
+        return input_path.parent / self.video_name / "clips"
 
     def _clip(
         self, start: float, duration: float, path: Path, name: str
