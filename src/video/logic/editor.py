@@ -11,6 +11,7 @@ from typer import secho
 class ClipMode(str, Enum):
     VIDEO = "video"
     GIF = "gif"
+    BLUR = "blur"
 
 
 @dataclass
@@ -18,7 +19,8 @@ class ClipSettings:
     fps: float | None = None
     mirror: bool = False
     clip_length: int = 0
-    mode: list[ClipMode] | None = None  # video | gif
+    mode: list[ClipMode] | None = None  # video | gif | blur
+    blur_sigma: int = 10
 
     # I dont think we need more for now
 
@@ -53,14 +55,14 @@ class Clip:
         for i in range(n_clips):
             clip: Path | None = self._clip(
                 start=start,
-                duration=start,
+                duration=self.settings.clip_length,
                 path=self.output_path,
-                name=self.video_name,
+                name=f"{self.video_name}_{i + 1}",
             )
 
             clips.append(clip)
             start += self.settings.clip_length
-            secho(f"video: {str(clip)} has been proccesed", fg=typer.colors.YELLOW)
+            secho(f"video: {str(clip)} has been processed", fg=typer.colors.YELLOW)
 
         return clips
 
@@ -83,29 +85,21 @@ class Clip:
         self, start: float, duration: float, path: Path, name: str
     ) -> Path | None:
         """make an individual clip from the video"""
-        output_path: Path = path / name
-
-        # TODO
-        #    de.GIF in self.settings.mode:
-        #         output_path = output_path.with_suffix(".gif")
-
-        #     if ClipMode.VIDEO in self.settings.mode:
-        #         output_path = output_path.with_suffix(".mp4")
-
-        output_path = output_path.with_suffix(".mp4")
+        mode = self.settings.mode or []
+        suffix = "_blur" if ClipMode.BLUR in mode else ""
+        output_path: Path = (path / f"{name}{suffix}").with_suffix(".mp4")
 
         try:
-            _ = (
-                ffmpeg.input(filename=self.input_path, ss=start, t=duration)
-                .output(
-                    filename=str(output_path),
-                )
-                .run()
-            )
+            stream = ffmpeg.input(filename=self.input_path, ss=start, t=duration)
+
+            if ClipMode.BLUR in mode:
+                stream = stream.filter("gblur", sigma=self.settings.blur_sigma)
+
+            _ = stream.output(filename=str(output_path)).run()
             return output_path
 
-        except Exception:
-            secho("Video failed", fg=typer.colors.RED)
+        except Exception as e:
+            secho(f"Video failed: {e}", fg=typer.colors.RED)
 
 
 # class Editor:
