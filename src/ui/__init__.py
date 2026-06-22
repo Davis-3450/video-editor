@@ -16,7 +16,12 @@ app = typer.Typer(
 
 
 @app.command()
-def edit(seconds: int, mode_input: str, input: str) -> None:
+def edit(
+    seconds: int,
+    mode_input: str,
+    input: str,
+    blur_sigma: int = typer.Option(10, "--blur-sigma", help="Blur intensity (only with mode=blur)"),
+) -> None:
     mode = []
 
     match mode_input:
@@ -26,9 +31,14 @@ def edit(seconds: int, mode_input: str, input: str) -> None:
             mode += [ClipMode.VIDEO]
         case "both":
             mode += [ClipMode.VIDEO, ClipMode.GIF]
+        case "blur":
+            mode += [ClipMode.BLUR]
+        case _:
+            typer.secho(f"Invalid mode '{mode_input}'. Use: gif, mp4, both, blur.", fg=typer.colors.RED)
+            raise typer.Exit(1)
 
     path = Path(input)
-    settings = ClipSettings(clip_length=seconds, mode=mode)
+    settings = ClipSettings(clip_length=seconds, mode=mode, blur_sigma=blur_sigma)
 
     editor = Clip(
         settings=settings,
