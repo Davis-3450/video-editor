@@ -11,7 +11,7 @@ def main():
     """Main entry point for the CLI application."""
     if not ffmpeg_install_check():
         secho("ffmpeg is not installed", fg=RED)
-        exit()
+        exit(1)
     app()
 
 
