@@ -20,7 +20,7 @@ def edit(
     seconds: int,
     mode_input: str,
     input: str,
-    blur_sigma: int = typer.Option(10, "--blur-sigma", help="Blur intensity (only with mode=blur)"),
+    blur_sigma: float = typer.Option(50.0, "--blur-sigma", help="Blur intensity for gaussian blur mode (default 50.0, higher = blurrier)"),
 ) -> None:
     mode = []
 
@@ -33,8 +33,10 @@ def edit(
             mode += [ClipMode.VIDEO, ClipMode.GIF]
         case "blur":
             mode += [ClipMode.BLUR]
+        case "preview":
+            mode += [ClipMode.PREVIEW]
         case _:
-            typer.secho(f"Invalid mode '{mode_input}'. Use: gif, mp4, both, blur.", fg=typer.colors.RED)
+            typer.secho(f"Invalid mode '{mode_input}'. Use: gif, mp4, both, blur, preview.", fg=typer.colors.RED)
             raise typer.Exit(1)
 
     path = Path(input)
