@@ -8,7 +8,10 @@ version = "0.1.0"
 description = "A CLI tool for making clips and GIFs"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["typed-ffmpeg>=3.6", "typer>=0.19.2"]
+dependencies = [
+    "typed-ffmpeg>=4.1",
+    "typer>=0.19.2",
+]
 
 [project.scripts]
 video-editor = "src.__main__:main"
